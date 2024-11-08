@@ -2,7 +2,7 @@ import { IsEmail , IsPhoneNumber, IsString, Length, Matches } from "class-valida
 
 export class CreateUserDto {
     @IsString()
-    @Length(3, 150, { message: 'El nombre debe tener entre 3 y 150 caracteres' })
+    @Length(3, 50, { message: 'El nombre debe tener entre 3 y 50 caracteres' })
     name: string;
 
     @IsEmail()

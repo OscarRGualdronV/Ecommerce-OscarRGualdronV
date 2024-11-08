@@ -5,9 +5,24 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { postgresDataSourceConfig } from './config/data.source';
+import { OrdersModule } from './orders/orders.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [UsersModule, ProductsModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [postgresDataSourceConfig],
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService ) =>
+        configService.get('postgres'),  
+    }),
+    UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule],
   controllers: [AppController],
   providers: [AppService],
 })
