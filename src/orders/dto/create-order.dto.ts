@@ -9,5 +9,5 @@ export class CreateOrderDto {
 
     @IsArray()
     @IsUUID('all', {each: true})
-    products: {id: string;}[];
+    products: {id: string}[];
 }
