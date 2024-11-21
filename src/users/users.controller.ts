@@ -21,27 +21,30 @@ export class UsersController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
   ) {
-    return this.usersService.findAll({ page, limit });
+    const pageNumber = Math.max(1, page || 1);
+    const limitNumber = Math.min(Math.max(1, limit || 5), 100);
+
+    return this.usersService.findAll({ page: pageNumber, limit: limitNumber });
   }
 
   @Get(':id')
   @HttpCode(200)
   @UseGuards(JwtGuard)
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
   @HttpCode(200)
   @UseGuards(JwtGuard)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @UseGuards(JwtGuard)
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
   }
 }

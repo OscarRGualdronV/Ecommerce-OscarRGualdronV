@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsString, Length } from "class-validator";
+import { IsNumber, IsString, IsUUID, Length } from "class-validator";
 
 export class CreateProductDto {
     
@@ -12,8 +12,11 @@ export class CreateProductDto {
     @IsNumber()
     price: number;
 
-    @IsBoolean()
-    stock: boolean;
+    @IsNumber()
+    stock: number;
+
+    @IsUUID()
+    categoryId: string;
 
     @IsString()
     imgUrl: string;

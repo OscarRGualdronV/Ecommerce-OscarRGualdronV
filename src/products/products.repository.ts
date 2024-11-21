@@ -1,94 +1,95 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Product } from "./entities/product.entity";
+import { Repository } from "typeorm";
+import { CategoryService } from "src/category/category.service";
+import { FileUploadService } from "src/file-upload/file-upload.service";
+import { UploadFileDto } from "src/file-upload/dto/upload.file.dto";
 
 @Injectable()
 export class ProductsRepository {
 
-    private products = {
-        data : [
-            {
-                id: 1,
-                name: "Laptop Pro 15",
-                description: "High-performance laptop with a 15-inch display, suitable for professional work.",
-                price: 1299.99,
-                stock: true,
-                imgUrl: "https://example.com/images/laptop-pro-15.jpg"
-            },
-            {
-                id: 2,
-                name: "Wireless Headphones",
-                description: "Noise-canceling over-ear headphones with up to 20 hours of battery life.",
-                price: 199.99,
-                stock: true,
-                imgUrl: "https://example.com/images/wireless-headphones.jpg"
-            },
-            {
-                id: 3,
-                name: "4K Monitor 27\"",
-                description: "27-inch 4K UHD monitor with vivid colors and high dynamic range.",
-                price: 349.99,
-                stock: false,
-                imgUrl: "https://example.com/images/4k-monitor.jpg"
-            },
-            {
-                id: 4,
-                name: "Mechanical Keyboard",
-                description: "Compact mechanical keyboard with RGB backlighting and customizable keys.",
-                price: 89.99,
-                stock: true,
-                imgUrl: "https://example.com/images/mechanical-keyboard.jpg"
-            },
-            {
-                id: 5,
-                name: "Smartphone Case",
-                description: "Durable, shockproof case designed for a wide range of smartphone models.",
-                price: 19.99,
-                stock: false,
-                imgUrl: "https://example.com/images/smartphone-case.jpg"
-            }
-        ]
-    };
+    constructor(
+        @InjectRepository(Product)
+        private readonly productsRepository: Repository<Product>,
+        private readonly categoryService: CategoryService,
+        private readonly fileUploadService: FileUploadService,
+    ) {}
 
-    async getAllProducts() {
-        return this.products.data;
+    async getAllProducts(page: number = 1, limit: number = 5) {
+        return await this.paginate({ page, limit });
     }
 
-    async getProductById(id: number) {
-        const product = this.products.data.find((product) => product.id === id);
+    async getProductById(id: string) {
+        const product = await this.productsRepository.findOne({ where: { id } });
         if (!product) {
-            throw new Error("Product not found");
+            throw new NotFoundException(`Product with ID ${id} not found`);
         }
         return product;
     }
 
-    async remove(id: number) {
-        const product = await this.getProductById(id);
-        this.products.data = this.products.data.filter((product) => product.id !== id);
-        return product;
+    async remove(id: string): Promise<{ id: string }> {
+        const product = await this.productsRepository.findOneBy({ id });
+        if (!product) {
+            throw new NotFoundException(`Product with ID ${id} not found`);
+        }
+        await this.productsRepository.remove(product);
+        return { id };
     }
 
-    async create(CreateProductDto: CreateProductDto) {
-        const newProduct = {
-            id: this.products.data.length + 1,
-            ...CreateProductDto
-        };
-        this.products.data.push(newProduct);
+    async create(createProductDto: CreateProductDto){
+        const category = await this.categoryService.getCategoryById(createProductDto.categoryId);
+        if(!category){
+            throw new NotFoundException(`Category with ID ${createProductDto.categoryId} not found`);
+        }
+        const newProduct = this.productsRepository.create(createProductDto);
+        newProduct.category = category;
+        await this.productsRepository.save(newProduct);
         return newProduct;
     }
 
-    async update(id: number, updateProductDto: UpdateProductDto) {
-        const product = await this.getProductById(id);
-        const updatedProduct = {
-            ...product,
-            ...updateProductDto
-        };
-        this.products.data = this.products.data.map((product) => {
-            if (product.id === id) {
-                return updatedProduct;
+    async update(id: string, updateProductDto: UpdateProductDto) {
+        if(updateProductDto.categoryId){
+            const category = await this.categoryService.getCategoryById(updateProductDto.categoryId);
+            if(!category){
+                throw new NotFoundException(`Category with ID ${updateProductDto.categoryId} not found`);
             }
-            return product;
+        }
+
+        await this.productsRepository.update(id, updateProductDto);
+        const product = await this.productsRepository.findOne({ where: { id } });
+        if (!product) {
+            throw new NotFoundException(`Product with ID ${id} not found`);
+        }
+        return product;
+    }
+
+    async paginate({ page, limit }: { page: number; limit: number }) {
+        const [data, totalCount] = await this.productsRepository.findAndCount({
+            skip: (page - 1) * limit,
+            take: limit,
         });
-        return updatedProduct;
+    
+        return {
+            data,
+            page,
+            limit,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+        };
+    }
+
+    async uploadFile(file: UploadFileDto, id: string){
+        const url = await this.fileUploadService.uploadFile({
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+            size: file.size,
+            buffer: file.buffer
+        });
+        await this.productsRepository.update(id, ({ imgUrl: url }));
+        return {imgUrl: url};
     }
 }
