@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +12,7 @@ import { OrdersModule } from './orders/orders.module';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryService } from './service/cloudinary/cloudinary.service';
 import { FileUploadModule } from './file-upload/file-upload.module';
+
 
 @Module({
   imports: [

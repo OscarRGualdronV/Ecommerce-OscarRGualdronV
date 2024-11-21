@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CloudinaryService } from 'src/service/cloudinary/cloudinary.service';
-import { UploadFileDto } from './dto/upload.file.dto';
+import { UploadFileDto } from './dto/uploadFileDto';
 
 @Injectable()
 export class FileUploadService {
@@ -16,5 +16,4 @@ export class FileUploadService {
   async getUrl(publicId: string) {
     return this.cloudinaryService.getUrl(publicId);
   }
-
 }

@@ -6,7 +6,8 @@ import { Product } from "./entities/product.entity";
 import { Repository } from "typeorm";
 import { CategoryService } from "src/category/category.service";
 import { FileUploadService } from "src/file-upload/file-upload.service";
-import { UploadFileDto } from "src/file-upload/dto/upload.file.dto";
+import { UploadFileDto } from "src/file-upload/dto/uploadFileDto";
+
 
 @Injectable()
 export class ProductsRepository {
@@ -15,7 +16,7 @@ export class ProductsRepository {
         @InjectRepository(Product)
         private readonly productsRepository: Repository<Product>,
         private readonly categoryService: CategoryService,
-        private readonly fileUploadService: FileUploadService,
+        private readonly fileUploadService: FileUploadService
     ) {}
 
     async getAllProducts(page: number = 1, limit: number = 5) {
@@ -81,15 +82,16 @@ export class ProductsRepository {
         };
     }
 
-    async uploadFile(file: UploadFileDto, id: string){
+    async uploadFile(file: UploadFileDto, id: string) {
         const url = await this.fileUploadService.uploadFile({
             fieldname: file.fieldname,
             originalname: file.originalname,
             mimetype: file.mimetype,
             size: file.size,
             buffer: file.buffer
-        });
-        await this.productsRepository.update(id, ({ imgUrl: url }));
+        })
+        await this.productsRepository.update(id, { imgUrl: url });
         return {imgUrl: url};
     }
+
 }

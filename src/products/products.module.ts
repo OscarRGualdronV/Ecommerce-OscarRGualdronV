@@ -8,14 +8,15 @@ import { Product } from './entities/product.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { CategoriesSeed } from 'src/seeds/categories/categories.seed';
 import { CategoryService } from 'src/category/category.service';
+
+import { CloudinaryService } from 'src/service/cloudinary/cloudinary.service';
 import { FileUploadModule } from 'src/file-upload/file-upload.module';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
-import { CloudinaryService } from 'src/service/cloudinary/cloudinary.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Product, Category]), FileUploadModule],
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository, ProductsSeed, 
-    CategoriesSeed, CategoryService, FileUploadService,CloudinaryService],
+    CategoriesSeed, CategoryService,CloudinaryService, FileUploadService],
 })
 export class ProductsModule {}
