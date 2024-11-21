@@ -1,4 +1,4 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
 export class ImageUploadPipe implements PipeTransform {

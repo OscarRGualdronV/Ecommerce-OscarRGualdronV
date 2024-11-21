@@ -54,9 +54,10 @@ export class ProductsController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @Query('id') id: string, 
-    @UploadedFile(new ImageUploadPipe()) file: Express.Multer.File) {
-    return await this.productsService.uploadFile(file, id);
+    @Query('id') id: string,
+    @UploadedFile(new ImageUploadPipe()) file: Express.Multer.File,
+  ) {
+    return this.productsService.uploadFile(file, id);
   }
 
 }

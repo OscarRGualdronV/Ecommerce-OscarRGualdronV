@@ -6,6 +6,6 @@ import { CloudinaryService } from 'src/service/cloudinary/cloudinary.service';
 @Module({
   controllers: [FileUploadController],
   providers: [FileUploadService, CloudinaryService],
-  exports
+  exports: [FileUploadService],
 })
 export class FileUploadModule {}

@@ -6,5 +6,4 @@ import { FileUploadService } from './file-upload.service';
 export class FileUploadController {
   constructor(private readonly fileUploadService: FileUploadService) {}
 
-
 }
