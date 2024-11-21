@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtGuard } from 'src/common/guards/jwt/jwt.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageUploadPipe } from 'src/pipes/image-upload/image-upload.pipe';
 
 
 @Controller('products')
@@ -47,4 +49,14 @@ export class ProductsController {
   async remove(@Param('id') id: string): Promise<{ id: string }> {
     return await this.productsService.remove(id);
   }
+
+  @Post('upload')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Query('id') id: string, 
+    @UploadedFile(new ImageUploadPipe()) file: Express.Multer.File) {
+    return await this.productsService.uploadFile(file, id);
+  }
+
 }

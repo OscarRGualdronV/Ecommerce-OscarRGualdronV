@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsRepository } from './products.repository';
+import { UploadFileDto } from 'src/file-upload/dto/upload.file.dto';
 
 @Injectable()
 export class ProductsService {
@@ -31,5 +32,9 @@ export class ProductsService {
 
   async remove(id: string): Promise<{ id: string }> {
     return this.productsRepository.remove(id)
+  }
+
+  async uploadFile(file: UploadFileDto, id: string) {
+    return this.productsRepository.uploadFile(file, id);
   }
 }

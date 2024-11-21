@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,6 +11,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { postgresDataSourceConfig } from './config/data.source';
 import { OrdersModule } from './orders/orders.module';
 import { CategoryModule } from './category/category.module';
+import { CloudinaryService } from './service/cloudinary/cloudinary.service';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -22,9 +25,9 @@ import { CategoryModule } from './category/category.module';
       useFactory: (configService: ConfigService ) =>
         configService.get('postgres'),  
     }),
-    UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule],
+    UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule, FileUploadModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CloudinaryService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
