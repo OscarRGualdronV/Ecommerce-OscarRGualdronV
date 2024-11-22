@@ -27,7 +27,7 @@ export class AuthService {
     );
 
     if(!isPasswordMatching){
-      throw new HttpException('Wrong credentials provided',HttpStatus.UNAUTHORIZED)
+      throw new HttpException('Incorrect password provided',HttpStatus.UNAUTHORIZED)
     }
 
     const token = await this.createToken(user)
@@ -46,7 +46,8 @@ export class AuthService {
   private async createToken(user: User){
     const payload = {
       id: user.id,
-      email: user.email
+      email: user.email,
+      administrador: user.administrador
     }
     return this.jwtService.signAsync(payload)
   }

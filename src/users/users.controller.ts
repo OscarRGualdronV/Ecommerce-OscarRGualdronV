@@ -3,6 +3,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from 'src/common/guards/jwt/jwt.guard';
+import { RolesGuard } from 'src/common/guards/roles/roles.guard';
+import { Roles } from 'src/decorators/role.decorator';
+import { Role } from './enum/rol.enum';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +19,8 @@ export class UsersController {
 
   @Get()
   @HttpCode(200)
-  @UseGuards(JwtGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
   findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 5,
@@ -36,7 +40,8 @@ export class UsersController {
 
   @Patch(':id')
   @HttpCode(200)
-  @UseGuards(JwtGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
