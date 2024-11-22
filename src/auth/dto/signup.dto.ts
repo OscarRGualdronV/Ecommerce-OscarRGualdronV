@@ -1,6 +1,6 @@
-import { IsEmail , IsNotEmpty, IsNumber, IsPhoneNumber, IsString, Length, Matches } from "class-validator";
+import { IsEmail , IsNotEmpty, IsNumber, IsString, Length, Matches } from "class-validator";
 
-export class CreateUserDto {
+export class SignupDto {
     @IsString()
     @IsNotEmpty()
     @Length(3, 80, { message: 'El nombre debe tener entre 3 y 80 caracteres' })
@@ -15,6 +15,10 @@ export class CreateUserDto {
         { message: 'La contraseña debe tener al menos 8 caracteres, al menos una letra, un número y un caracter especial (@$!%*#?&)'} )
     @IsString()   
     password: string;
+
+    @IsNotEmpty()
+    @IsString()
+    passwordConfirm: string;
 
     @IsString()
     @IsNotEmpty()
