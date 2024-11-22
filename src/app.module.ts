@@ -12,6 +12,7 @@ import { OrdersModule } from './orders/orders.module';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryService } from './service/cloudinary/cloudinary.service';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { SharedModule } from './shared/shared/shared.module';
 
 
 @Module({
@@ -25,7 +26,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
       useFactory: (configService: ConfigService ) =>
         configService.get('postgres'),  
     }),
-    UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule, FileUploadModule],
+    UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule, FileUploadModule, SharedModule],
   controllers: [AppController],
   providers: [AppService, CloudinaryService],
 })
