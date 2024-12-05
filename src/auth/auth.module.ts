@@ -12,5 +12,6 @@ import { UsersService } from 'src/users/users.service';
   imports: [UsersModule, TypeOrmModule.forFeature([User]), SharedModule],
   controllers: [AuthController],
   providers: [AuthService, UsersService],
+  exports: [AuthService]
 })
 export class AuthModule {}

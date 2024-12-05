@@ -1,4 +1,4 @@
-import { IsEmail , IsNotEmpty, IsNumber, IsString, Length, Matches } from "class-validator";
+import { IsEmail , IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class SignupDto {
     @IsString()
@@ -38,4 +38,12 @@ export class SignupDto {
     @IsNotEmpty()
     @Length(3, 50, { message: 'La ciudad debe tener entre 3 y 20 caracteres' })
     city: string;
+
+    @IsString()
+    @IsOptional()
+    createdAt: string;
+
+    constructor(partial: Partial<SignupDto>) {
+        Object.assign(this, partial);
+    }
 }

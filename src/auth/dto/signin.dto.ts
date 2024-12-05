@@ -9,4 +9,8 @@ export class SigninDto {
     @IsString()   
     @IsNotEmpty()
     password: string;
+
+    constructor(partial: Partial<SigninDto>) {
+        Object.assign(this, partial);
+    }
 }
