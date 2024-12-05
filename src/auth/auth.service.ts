@@ -39,8 +39,13 @@ export class AuthService {
       throw new HttpException('Passwords do not match',400);
     }
 
+    const existingUser = await this.usersRepository.findByEmail(signUpUser.email);
+    if(existingUser){
+      throw new HttpException('Email is already registered', 400);
+    }
+
     signUpUser.password = await bcrypt.hash(signUpUser.password, 10);
-    return await this.usersRepository.create(signUpUser)
+    return this.usersRepository.create(signUpUser)
   }
   
   private async createToken(user: User){

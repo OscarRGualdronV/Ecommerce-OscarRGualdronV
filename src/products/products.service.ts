@@ -11,23 +11,23 @@ export class ProductsService {
     private productsRepository: ProductsRepository
   ) {}
 
-  create(createProductDto: CreateProductDto) {
-    return this.productsRepository.create(createProductDto);
+  async create(createProductDto: CreateProductDto) {
+    return await this.productsRepository.create(createProductDto);
   }
 
-  findAll(paginationParams: {
+  async findAll(paginationParams: {
     page?: number;
     limit?: number;}) {
     const { page = 1, limit = 5 } = paginationParams;
-    return this.productsRepository.getAllProducts(page, limit);
+    return await this.productsRepository.getAllProducts(page, limit);
   }
 
-  findOne(id: string) {
-    return this.productsRepository.getProductById(id);
+  async findOne(id: string) {
+    return await this.productsRepository.getProductById(id);
   }
 
-  update(id: string, updateProductDto: UpdateProductDto) {
-    return this.productsRepository.update(id, updateProductDto); 
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    return await this.productsRepository.update(id, updateProductDto); 
   }
 
   async remove(id: string): Promise<{ id: string }> {

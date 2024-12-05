@@ -14,7 +14,7 @@ export class UsersRepository {
     ) {}
     
 
-    async getAllUsers(page: number = 1, limit: number = 5) {
+    async getAllUsers(page: number = 1, limit: number = 5): Promise<{ data: User[]; page: number; limit: number; totalCount: number; totalPages: number }> {
         return this.paginate({ page, limit });
     }
     
@@ -34,12 +34,12 @@ export class UsersRepository {
         return this.usersRepository.remove(user);
     }
 
-    async findByEmail(email: string) {
+    async findByEmail(email: string): Promise<User | undefined>{
         const user = await this.usersRepository.findOneBy({ email } );
         if (!user) {
             throw new Error("User not found");
         }
-        return user;
+        return user || undefined;
 
     }
 
@@ -58,7 +58,7 @@ export class UsersRepository {
         return user;
     }
 
-    async paginate({ page, limit }: { page: number; limit: number }) {
+    async paginate({ page, limit }: { page: number; limit: number }){
         const [data, totalCount] = await this.usersRepository.findAndCount({
             skip: (page - 1) * limit,
             take: limit,

@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "strict": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2020",
     "sourceMap": true,
@@ -17,10 +15,17 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames":false,
     "noFallthroughCasesInSwitch": false,
+    "strict": true,
+    "esModuleInterop": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["Multer", "jest"],
+    "paths": {
+      "src/*": ["src/*"],
+      "tests/*": ["tests/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

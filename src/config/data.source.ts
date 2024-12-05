@@ -7,6 +7,14 @@ dotenv.config({
     path: '.env.development',
 });
 
+const sqliteTestDataSourceOptions: DataSourceOptions = {
+    type: 'sqlite',
+    database: ':memory:',
+    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    synchronize: true,
+    dropSchema: true
+}
+
 const PostgresDataSourceOptions: DataSourceOptions = {
     type: 'postgres',
     host: process.env.DB_HOST,
@@ -26,4 +34,10 @@ export const postgresDataSourceConfig = registerAs(
     'postgres', 
     () => PostgresDataSourceOptions);
 
+export const sqliteTestDataSourceConfig = registerAs(
+    'sqlite',
+    () => sqliteTestDataSourceOptions
+)    
+
 export const PostgresDataSource = new DataSource(PostgresDataSourceOptions);
+export const SqliteTestDataSource = new DataSource(sqliteTestDataSourceOptions);

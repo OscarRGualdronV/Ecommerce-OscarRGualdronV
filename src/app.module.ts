@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { postgresDataSourceConfig } from './config/data.source';
+import { postgresDataSourceConfig, sqliteTestDataSourceConfig } from './config/data.source';
 import { OrdersModule } from './orders/orders.module';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryService } from './service/cloudinary/cloudinary.service';
@@ -19,11 +19,16 @@ import { SharedModule } from './shared/shared/shared.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [postgresDataSourceConfig],
+      load: [postgresDataSourceConfig, sqliteTestDataSourceConfig, () => ({
+        enviroment: process.env.enviroment || 'TEST'
+      })],
+      envFilePath: ['.env.development', '.env']
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService ) =>
+        configService.get('enviroment') === 'TEST' ?  
+        configService.get('sqliteTest'):
         configService.get('postgres'),  
     }),
     UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule, FileUploadModule, SharedModule],
