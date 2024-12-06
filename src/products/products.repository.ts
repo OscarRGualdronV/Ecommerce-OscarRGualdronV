@@ -4,9 +4,9 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "./entities/product.entity";
 import { Repository } from "typeorm";
-import { CategoryService } from "src/category/category.service";
-import { FileUploadService } from "src/file-upload/file-upload.service";
-import { UploadFileDto } from "src/file-upload/dto/uploadFileDto";
+import { CategoryService } from "../category/category.service";
+import { FileUploadService } from "../file-upload/file-upload.service";
+import { UploadFileDto } from "../file-upload/dto/uploadFileDto";
 
 
 @Injectable()

@@ -3,7 +3,7 @@ import { ProductsService } from './products.service';
 import { ProductsRepository } from './products.repository';
 import { CreateProductDto } from './dto/create-product.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { UploadFileDto } from 'src/file-upload/dto/uploadFileDto';
+import { UploadFileDto } from '../file-upload/dto/uploadFileDto';
 
 
 const mockUserId = uuidv4();

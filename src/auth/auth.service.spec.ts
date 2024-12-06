@@ -1,64 +1,74 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UsersRepository } from 'src/users/users.repository';
-import { User } from 'src/users/entities/user.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { SignupDto } from './dto/signup.dto';
-import { Role } from 'src/users/enum/rol.enum';
-import { v4 as uuidv4 } from 'uuid';
+import { UsersService } from 'src/users/users.service';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { SigninDto } from './dto/signin.dto';
+import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
-const mockUserId = uuidv4();
+
+jest.mock('bcrypt', () => ({
+  compare: jest.fn(),
+}));
 
 describe('AuthService', () => {
-  let service: AuthService;
-  let usersRepositoryMock: Partial<UsersRepository>;
+  let authService: AuthService;
+  let userService: UsersService;
+  let jwtService: JwtService;
+  let configService: ConfigService;
+
+  const mockUserService = {
+    findByEmail: jest.fn(),
+    create: jest.fn(),
+  };
+
+  const mockJwtService = {
+    signAsync: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('yourSecretKey'), 
+  };
+
+
 
   beforeEach(async () => {
-
-    usersRepositoryMock = {
-      findByEmail: () => Promise.resolve(undefined),
-      create: (entityLike?: Partial<User>) => 
-        Promise.resolve({
-          ...entityLike,
-          administrador: Role.USER,
-          id: mockUserId
-        } as User),
-    };
-
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        {provide: UsersRepository, useValue: usersRepositoryMock},
-        {provide: JwtService, useValue: {}}, 
-        {provide: getRepositoryToken(User), useValue: {}},       
+        { provide: UsersService, useValue: mockUserService },
+        { provide: JwtService, useValue: mockJwtService },
+        { provide: ConfigService, useValue: mockConfigService }
       ],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
+    authService = module.get<AuthService>(AuthService);
+    userService = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
+    configService = module.get<ConfigService>(ConfigService)
   });
 
-  const mockUser = new SignupDto({
-    name: 'Juan Constantine',
-    email: 'M2Qr2@example.com',
-    password: 'Pass5678$',
-    passwordConfirm: 'Pass5678$',
-    address: 'Calle 123',
-    phone: 123456789,
-    country: 'Colombia',
-    city: 'Bogota',
-    createdAt: '26/02/2024',
-  });
+  describe('signIn', () => {
+    it('should throw an error if user does not exist', async () => {
+      const signInDto: SigninDto = { email: 'test@example.com', password: 'password' };
+      mockUserService.findByEmail.mockResolvedValue(null);
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+      await expect(authService.signIn(signInDto)).rejects.toThrow(
+        new HttpException('User does not exist', HttpStatus.NOT_FOUND),
+      );
+    });
 
-  it('singUp() create a new user with encrypted password', async () => {
-    const user = await service.singUp(mockUser);
-    expect(user).toHaveProperty('id');
-    expect(user).toHaveProperty('administrador', Role.USER);
-    expect(user).toHaveProperty('password');
-  })
+    it('should throw an error if password is incorrect', async () => {
+      const signInDto: SigninDto = { email: 'test@example.com', password: 'password' };
+      const mockUser = { id: '1', email: 'test@example.com', password: 'hashedPassword' };
+      mockUserService.findByEmail.mockResolvedValue(mockUser);
+      bcrypt.compare.mockResolvedValue(false); 
+
+      await expect(authService.signIn(signInDto)).rejects.toThrow(
+        new HttpException('Incorrect password provided', HttpStatus.UNAUTHORIZED),
+      );
+    });
+
+  });
 });

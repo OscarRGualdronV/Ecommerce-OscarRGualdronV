@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileUploadService } from './file-upload.service';
-import { CloudinaryService } from 'src/service/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../service/cloudinary/cloudinary.service';
 
 const cloudinaryServiceMock = {
   uploadfile: jest.fn(),

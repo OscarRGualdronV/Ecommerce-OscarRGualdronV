@@ -1,11 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { hash } from 'bcrypt';
-import { UsersRepository } from 'src/users/users.repository';
-import { User } from 'src/users/entities/user.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,41 +8,25 @@ import { v4 as uuidv4 } from 'uuid';
 
 const mockUserId = uuidv4();
 
+const authServiceMock = {
+  signIn: jest.fn(),
+  signUp: jest.fn(),
+};
+
 describe('AuthController', () => {
   let controller: AuthController;
-  let usersRepositoryMock: Partial<UsersRepository>;
+  let authService: AuthService;
 
   beforeEach(async () => {
-    const hashedPassword = await hash('123456', 10);
-    usersRepositoryMock = {
-      findByEmail: jest.fn().mockImplementation((email: string) => {
-        if (email === 'M2Qr2@example.com') {
-          return Promise.resolve({
-            email: 'M2Qr2@example.com',
-            password: hashedPassword,
-            administrador: 'user',
-          } as User);
-        } else {
-          return Promise.resolve(undefined);
-        }
-      }),
-      create: jest.fn().mockResolvedValue({
-        administrador: 'user',
-        id: mockUserId,
-      } as User),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        AuthService,
-        { provide: UsersRepository, useValue: usersRepositoryMock }, 
-        { provide: getRepositoryToken(User), useValue: {} },
-        { provide: JwtService, useValue: { signAsync: () => Promise.resolve('mockedToken') } }, 
+        {provide: AuthService, useValue: authServiceMock},
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
   });
 
 
@@ -55,61 +34,43 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('singUp() should return a new UserDto and create User', async () => {
+  describe('signIn', () => {
+    it('should call signIn method of AuthService', async () => {
+      const signInDto: SigninDto = { email: 'test@test.com', password: 'password' }; 
+      const result = { token: 'some-token' }; 
 
-    const mockUserDto = new SignupDto({
-      name: 'Juan Constantine',
-      email: 'test@example.com',
-      password: 'Pass5678$',
-      passwordConfirm: 'Pass5678$',
-      address: 'Calle 123',
-      phone: 123456789,
-      country: 'Colombia',
-      city: 'Bogota',
-      createdAt: '26/02/2024',
+      authServiceMock.signIn.mockResolvedValue(result);
+
+      const response = await controller.signIn(signInDto);
+      expect(response).toEqual(result);
+      expect(authServiceMock.signIn).toHaveBeenCalledWith(signInDto);
     });
-  
-    const createdUser = {
-      id: mockUserId,
-      name: mockUserDto.name,
-      email: mockUserDto.email,
-      address: mockUserDto.address,
-      phone: mockUserDto.phone,
-      country: mockUserDto.country,
-      city: mockUserDto.city,
-      administrador: 'user',
-      password: 'hashedPassword', 
-      orders: [], 
-    } as User;
+  });
 
-    jest.spyOn(controller['authService'], 'singUp').mockResolvedValue(createdUser);
+  describe('signUp', () => {
+    it('should call signUp method of AuthService and return the user', async () => {
+      const signUpDto: SignupDto = { 
+        name: 'Test', 
+        email: 'test@test.com', 
+        password: 'password',
+        passwordConfirm: 'password',
+        address: 'Address',
+        phone: 123456789,
+        country: 'Country',
+        city: 'City',
+        createdAt: '2023-07-23T12:34:56.789Z',
+      }; 
+      const createdUser = { id: '1', name: 'Test', email: 'test@test.com' }; 
 
-    const response = await controller.singUp(mockUserDto);
+      authServiceMock.signUp.mockResolvedValue(createdUser);
 
-    expect(response).toBeDefined();
-    expect(response).toHaveProperty('message', 'User created successfully');
-    expect(response).toHaveProperty('user');
-    expect(response.user).toHaveProperty('id', createdUser.id);
-    expect(response.user).toHaveProperty('email', createdUser.email);
-    expect(response.user).toHaveProperty('password');
-  })
-
-  it('signIn() should return a token', async () => {
-
-    const mockSinginDto = new SigninDto({
-      email: 'M2Qr2@example.com',
-      password: 'Pass5678$',
+      const response = await controller.signUp(signUpDto);
+      expect(response).toEqual({
+        message: 'User created successfully',
+        user: createdUser,
+      });
+      expect(authServiceMock.signUp).toHaveBeenCalledWith(signUpDto);
     });
+  });
 
-    const mockToken = {
-      token: 'mockedToken',
-    };
-
-    jest.spyOn(controller['authService'], 'signIn').mockResolvedValue(mockToken);
-    const response = await controller.signIn(mockSinginDto);
-
-    expect(response).toBeDefined();
-    expect(response).toHaveProperty('token', mockToken.token);
-    expect(controller['authService'].signIn).toHaveBeenCalledTimes(1);
-  })
 });

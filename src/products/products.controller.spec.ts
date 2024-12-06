@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
-import { JwtGuard } from 'src/common/guards/jwt/jwt.guard';
+import { JwtGuard } from '../common/guards/jwt/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { CreateProductDto } from './dto/create-product.dto';

@@ -7,29 +7,40 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './middleware/logger/logger.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { postgresDataSourceConfig, sqliteTestDataSourceConfig } from './config/data.source';
+import { postgresDataSourceConfig} from './config/data.source';
 import { OrdersModule } from './orders/orders.module';
 import { CategoryModule } from './category/category.module';
 import { CloudinaryService } from './service/cloudinary/cloudinary.service';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { SharedModule } from './shared/shared/shared.module';
+import { console } from 'inspector';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [postgresDataSourceConfig, sqliteTestDataSourceConfig, () => ({
-        enviroment: process.env.enviroment || 'TEST'
+      load: [postgresDataSourceConfig, () => ({
+        environment: process.env.environment || 'TEST'
       })],
-      envFilePath: ['.env.development', '.env']
+      envFilePath: ['.env.development', '.env.test']
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService ) =>
-        configService.get('enviroment') === 'TEST' ?  
-        configService.get('sqliteTest'):
-        configService.get('postgres'),  
+      useFactory: (configService: ConfigService ) => {
+        try{        const environment = configService.get('environment') 
+
+          const dbConfig = environment === 'TEST'
+              ? configService.get('postgres')
+              : configService.get('postgres');
+  
+          console.log('Database config:', dbConfig);    
+          return dbConfig;
+        }catch (error){
+            console.log('Error al obtener la configuración de la base de datos:', error);
+            throw error;
+          }
+      }
     }),
     UsersModule, ProductsModule, AuthModule, OrdersModule, CategoryModule, FileUploadModule, SharedModule],
   controllers: [AppController],

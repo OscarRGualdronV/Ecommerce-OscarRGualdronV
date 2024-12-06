@@ -1,8 +1,6 @@
 import { ArrayNotEmpty, IsArray , IsNotEmpty, IsUUID } from "class-validator";
 
-// export interface ProductId {
-//     id: string;
-// }
+
 export class CreateOrderDto {
     @IsUUID()
     @IsNotEmpty()
@@ -11,5 +9,5 @@ export class CreateOrderDto {
     @IsArray()
     @ArrayNotEmpty()
     @IsUUID('all', {each: true})
-    products: {id: string}[];
+    products: string[];
 }

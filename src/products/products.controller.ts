@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { JwtGuard } from 'src/common/guards/jwt/jwt.guard';
+import { JwtGuard } from '../common/guards/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ImageUploadPipe } from 'src/pipes/image-upload/image-upload.pipe';
+import { ImageUploadPipe } from '../pipes/image-upload/image-upload.pipe';
 
 
 @Controller('products')
