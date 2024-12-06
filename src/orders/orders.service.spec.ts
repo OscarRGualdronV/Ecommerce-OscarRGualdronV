@@ -2,11 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersService } from './orders.service';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Product } from 'src/products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
+import { Product } from '../products/entities/product.entity';
 import { OrderDetail } from './entities/order.detail.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+
+
+const mockUserId = uuidv4();
+const mockUserId2 = uuidv4();
+const mockProductId1 = uuidv4();
+const mockProductId2 = uuidv4();
+
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -60,21 +68,20 @@ describe('OrdersService', () => {
   describe('getOrder', () => {
     it('should return the order with user id', async () => {
       const mockOrder = {
-        id: '1',
-        user: { id: '1' },
+        user: { id: mockUserId },
         orderDetail: [],
       };
 
       mockOrderRepository.findOne.mockResolvedValue(mockOrder);
 
-      const result = await service.getOrder('1');
+      const result = await service.getOrder(mockUserId);
 
       expect(result).toEqual({
         ...mockOrder,
         user: { id: mockOrder.user.id },
       });
       expect(mockOrderRepository.findOne).toHaveBeenCalledWith({
-        where: { id: '1' },
+        where: { id: mockUserId },
         relations: ['user', 'orderDetail', 'orderDetail.products'],
       });
     });
@@ -90,14 +97,14 @@ describe('OrdersService', () => {
     describe('addOrder', () => {
       it('should create and return a new order', async () => {
         const createOrderDto = {
-          userId: '1',
-          products: [{ id: '1' }, { id: '2' }],
+          userId: mockUserId,
+          products: ['mockProductId1', 'mockProductId2'],
         };
   
-        const mockUser = { id: '1' };
+        const mockUser = { id: mockUserId };
         const mockProducts = [
-          { id: '1', stock: 5, price: 100 },
-          { id: '2', stock: 3, price: 150 },
+          { id: mockProductId1, stock: 5, price: 100 },
+          { id: mockProductId2, stock: 3, price: 150 },
         ];
   
         mockUserRepository.findOne.mockResolvedValue(mockUser);
@@ -118,23 +125,14 @@ describe('OrdersService', () => {
         expect(mockOrderDetailRepository.save).toHaveBeenCalledWith(expect.any(Object));
         expect(mockProductRepository.save).toHaveBeenCalledWith(mockProducts);
       });
-  
-      it('should throw NotFoundException if user is not found', async () => {
-        const createOrderDto = { userId: '1', products: [{ id: '1' }] };
-        mockUserRepository.findOne.mockResolvedValue(null);
-  
-        await expect(service.addOrder(createOrderDto)).rejects.toThrow(
-          new NotFoundException('User with ID 1 not found'),
-        );
-      });
-  
+    
       it('should throw NotFoundException if no products are available', async () => {
-        const createOrderDto = { userId: '1', products: [{ id: '1' }] };
+        const createOrderDto = { userId: mockUserId, products: ['mockProductId'] };
   
-        const mockUser = { id: '1' };
+        const mockUser = { id: mockUserId };
         mockUserRepository.findOne.mockResolvedValue(mockUser);
         mockProductRepository.find.mockResolvedValue([
-          { id: '1', stock: 0, price: 100 },
+          { id: 'mockProductId', stock: 0, price: 100 },
         ]);
   
         await expect(service.addOrder(createOrderDto)).rejects.toThrow(

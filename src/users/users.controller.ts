@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, HttpCode, Query, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, Query, HttpStatus, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtGuard } from 'src/common/guards/jwt/jwt.guard';
-import { RolesGuard } from 'src/common/guards/roles/roles.guard';
-import { Roles } from 'src/decorators/role.decorator';
+import { JwtGuard } from '../common/guards/jwt/jwt.guard';
+import { RolesGuard } from '../common/guards/roles/roles.guard';
+import { Roles } from '../decorators/role.decorator';
 import { Role } from './enum/rol.enum';
 
 @Controller('users')
@@ -28,14 +28,14 @@ export class UsersController {
     const pageNumber = Math.max(1, page || 1);
     const limitNumber = Math.min(Math.max(1, limit || 5), 100);
 
-    return this.usersService.findAll({ page: pageNumber, limit: limitNumber });
+    return this.usersService.getAllUsers(pageNumber, limitNumber);
   }
 
   @Get(':id')
   @HttpCode(200)
   @UseGuards(JwtGuard)
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    return this.usersService.finById(id);
   }
 
   @Patch(':id')

@@ -3,10 +3,9 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Order } from './entities/order.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Product } from 'src/products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
+import { Product } from '../products/entities/product.entity';
 import { OrderDetail } from './entities/order.detail.entity';
-import { parse } from 'path/posix';
 
 @Injectable()
 export class OrdersService {
@@ -48,10 +47,13 @@ export class OrdersService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    const products = productIds.map((product) => product.id); 
     const productsFound = await this.productRepository.find({
-      where: {id: In(products)}
+      where: {id: In(productIds)}
     })
+
+    if (productsFound.length !== productIds.length) {
+      throw new NotFoundException('Some products were not found');
+    }
 
     const availableProducts = productsFound.filter((product) => product.stock > 0);
 
@@ -60,12 +62,12 @@ export class OrdersService {
     }
 
     let totalPrice = 0;
+
     availableProducts.forEach((product) => {
       totalPrice += parseFloat(product.price.toString());
       product.stock -= 1;
     });
 
-    console.log('totalPrice antes de toFixed:', totalPrice);
     totalPrice = parseFloat(totalPrice.toFixed(2));
 
     await this.productRepository.save(availableProducts);

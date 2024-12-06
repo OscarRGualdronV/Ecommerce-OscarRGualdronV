@@ -8,6 +8,9 @@
   },
   "moduleDirectories": ["<rootDir>/../", "node_modules"],
   "moduleNameMapper": {
-    "^src/(.*)": "<rootDir>/src/$1"
-  }
+    "^src/(.*)": "<rootDir>/src/$1",
+    "^tests/(.*)": "<rootDir>/tests/$1"
+  },
+  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "coverageDirectory": "./coverage"
 }

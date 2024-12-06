@@ -4,16 +4,10 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 
 dotenv.config({
-    path: '.env.development',
+    path: `.env.${process.env.NODE_ENV || 'development'}`,
 });
 
-const sqliteTestDataSourceOptions: DataSourceOptions = {
-    type: 'sqlite',
-    database: ':memory:',
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,
-    dropSchema: true
-}
+const isTestEnv = process.env.NODE_ENV === 'test';
 
 const PostgresDataSourceOptions: DataSourceOptions = {
     type: 'postgres',
@@ -21,9 +15,9 @@ const PostgresDataSourceOptions: DataSourceOptions = {
     port: parseInt(process.env.DB_PORT, 10),
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    database: isTestEnv ? process.env.TEST_DB_NAME : process.env.DB_NAME,
     synchronize: true,
-    logging: false,
+    logging: true,
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/migrations/*{.ts,.js}'],
     subscribers: [],
@@ -34,10 +28,6 @@ export const postgresDataSourceConfig = registerAs(
     'postgres', 
     () => PostgresDataSourceOptions);
 
-export const sqliteTestDataSourceConfig = registerAs(
-    'sqlite',
-    () => sqliteTestDataSourceOptions
-)    
 
 export const PostgresDataSource = new DataSource(PostgresDataSourceOptions);
-export const SqliteTestDataSource = new DataSource(sqliteTestDataSourceOptions);
+

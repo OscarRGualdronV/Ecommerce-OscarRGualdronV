@@ -38,7 +38,7 @@ describe('OrdersController', () => {
     it('should return a successfully created order with the correct structure', async () => {
       const createOrderDto: CreateOrderDto = {
         userId: mockUserId,
-        products: [{id: mockProductId}],
+        products: ['mockProductId'],
       };
 
       const mockOrder = {
@@ -62,7 +62,7 @@ describe('OrdersController', () => {
     it('should throw an error if order creation fails', async () => {
       const createOrderDto: CreateOrderDto = {
         userId: mockUserId,
-        products: [{ id: mockProductId }],
+        products: ['mockProductId'],
       };
 
       mockOrdersService.addOrder.mockRejectedValue(new NotFoundException('Error creating order'));

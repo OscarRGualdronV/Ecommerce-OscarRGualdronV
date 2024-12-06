@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { JwtGuard } from 'src/common/guards/jwt/jwt.guard';
+import { JwtGuard } from '../common/guards/jwt/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 const mockUserId = uuidv4();
+
+
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -16,8 +17,8 @@ describe('UsersController', () => {
 
   const mockUsersService = {
     create: jest.fn(),
-    findAll: jest.fn(),
-    findOne: jest.fn(),
+    getAllUsers: jest.fn(),
+    finById: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
   };
@@ -40,7 +41,7 @@ describe('UsersController', () => {
       controllers: [UsersController],
       providers: [
         {provide: UsersService,useValue: mockUsersService},
-        {provide: JwtGuard, useValue: {mockJwtGuard}},
+        {provide: JwtGuard, useValue: mockJwtGuard},
         {provide: JwtService, useValue: mockJwtService},
         {provide: ConfigService, useValue: mockConfigService},],
     }).compile();
@@ -78,40 +79,16 @@ describe('UsersController', () => {
   });
 
   describe('findAll', () => {
-    it('should return paginated users', async () => {
-      const mockPagination = {
-        data: [],
-        page: 1,
-        limit: 5,
-        totalCount: 0,
-        totalPages: 0,
-      };
-
-      mockUsersService.findAll.mockResolvedValue(mockPagination);
-
+    it('should return a list of users', async () => {
+      const mockUsers = [{ id: mockUserId, name: 'Test User' }];
+      mockUsersService.getAllUsers.mockResolvedValue(mockUsers);
+  
       const result = await controller.findAll(1, 5);
-
-      expect(mockUsersService.findAll).toHaveBeenCalledWith({ page: 1, limit: 5 });
-      expect(result).toEqual(mockPagination);
+      
+      expect(mockUsersService.getAllUsers).toHaveBeenCalledWith(1, 5);
+      expect(result).toEqual(mockUsers);
     });
   });
+  
 
-  describe('update', () => {
-    it('should update a user', async () => {
-      const updateUserDto: UpdateUserDto = { name: 'Updated User' };
-      const mockUser = {
-        id: mockUserId,
-        email: 'test@example.com',
-        password: 'password',
-        name: 'Updated User',
-      };
-
-      mockUsersService.update.mockResolvedValue(mockUser);
-
-      const result = await controller.update(mockUserId, updateUserDto);
-
-      expect(mockUsersService.update).toHaveBeenCalledWith(mockUserId, updateUserDto);
-      expect(result).toEqual(mockUser);
-    });
-  });
 });

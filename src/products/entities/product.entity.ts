@@ -1,8 +1,8 @@
-import { Category } from 'src/category/entities/category.entity';
-import { OrderDetail } from 'src/orders/entities/order.detail.entity';
+import { Category } from '../../category/entities/category.entity';
+import { OrderDetail } from '../../orders/entities/order.detail.entity';
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinColumn } from 'typeorm';
 import {v4 as uuid} from 'uuid';
-import { Order } from 'src/orders/entities/order.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 
 
