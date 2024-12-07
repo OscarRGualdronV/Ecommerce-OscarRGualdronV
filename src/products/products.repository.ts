@@ -23,7 +23,7 @@ export class ProductsRepository {
         return await this.paginate({ page, limit });
     }
 
-    async getProductById(id: string) {
+    async getProductById(id: string): Promise<Product> {
         const product = await this.productsRepository.findOne({ where: { id } });
         if (!product) {
             throw new NotFoundException(`Product with ID ${id} not found`);
@@ -40,7 +40,7 @@ export class ProductsRepository {
         return { id };
     }
 
-    async create(createProductDto: CreateProductDto){
+    async create(createProductDto: CreateProductDto): Promise<Product> {
         const category = await this.categoryService.getCategoryById(createProductDto.categoryId);
         if(!category){
             throw new NotFoundException(`Category with ID ${createProductDto.categoryId} not found`);
@@ -51,7 +51,7 @@ export class ProductsRepository {
         return newProduct;
     }
 
-    async update(id: string, updateProductDto: UpdateProductDto) {
+    async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
         if(updateProductDto.categoryId){
             const category = await this.categoryService.getCategoryById(updateProductDto.categoryId);
             if(!category){
@@ -82,7 +82,7 @@ export class ProductsRepository {
         };
     }
 
-    async uploadFile(file: UploadFileDto, id: string) {
+    async uploadFile(file: UploadFileDto, id: string): Promise<{ imgUrl: string }> {
         const url = await this.fileUploadService.uploadFile({
             fieldname: file.fieldname,
             originalname: file.originalname,
