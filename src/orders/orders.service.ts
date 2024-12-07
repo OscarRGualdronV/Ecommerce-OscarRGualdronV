@@ -21,7 +21,7 @@ export class OrdersService {
     private readonly orderDetailRepository: Repository<OrderDetail>,
   ) { }
 
-  async getOrder(id: string){
+  async getOrder(id: string) {
     const order = await this.orderRepository.findOne({
       where: {id},
       relations: ['user', 'orderDetail', 'orderDetail.products']
@@ -37,7 +37,7 @@ export class OrdersService {
     return orderWithUserId;
   }
 
-  async addOrder(createOrderDto: CreateOrderDto){
+  async addOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     const {userId, products: productIds} = createOrderDto;
     
     const user = await this.userRepository.findOne({

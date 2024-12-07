@@ -17,7 +17,7 @@ const PostgresDataSourceOptions: DataSourceOptions = {
     password: process.env.DB_PASSWORD,
     database: isTestEnv ? process.env.TEST_DB_NAME : process.env.DB_NAME,
     synchronize: true,
-    logging: true,
+    logging: false,
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/migrations/*{.ts,.js}'],
     subscribers: [],

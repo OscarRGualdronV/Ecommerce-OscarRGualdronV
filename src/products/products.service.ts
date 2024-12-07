@@ -3,6 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsRepository } from './products.repository';
 import { UploadFileDto } from '../file-upload/dto/uploadFileDto';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
@@ -11,7 +12,7 @@ export class ProductsService {
     private productsRepository: ProductsRepository
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto): Promise<Product> {
     return await this.productsRepository.create(createProductDto);
   }
 
@@ -22,11 +23,11 @@ export class ProductsService {
     return await this.productsRepository.getAllProducts(page, limit);
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Product> {
     return await this.productsRepository.getProductById(id);
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
     return await this.productsRepository.update(id, updateProductDto); 
   }
 
@@ -34,7 +35,7 @@ export class ProductsService {
     return this.productsRepository.remove(id)
   }
 
-  async uploadFile(file: UploadFileDto, id: string) {
+  async uploadFile(file: UploadFileDto, id: string): Promise<{ imgUrl: string }> {
     return this.productsRepository.uploadFile(file, id)
   }
 

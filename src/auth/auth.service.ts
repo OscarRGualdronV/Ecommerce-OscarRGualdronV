@@ -15,7 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async signIn(signInUser: SigninDto) {
+  async signIn(signInUser: SigninDto): Promise<{ token: string }> {
     const user = await this.userService.findByEmail(signInUser.email)
     if(!user){
       throw new HttpException('User does not exist', HttpStatus.NOT_FOUND)
@@ -34,8 +34,7 @@ export class AuthService {
     return { token };
   }
 
-  async signUp(signUpUser: SignupDto) {
-    console.log('Signup data:', signUpUser);
+  async signUp(signUpUser: SignupDto):Promise<User> {
     if(signUpUser.password !== signUpUser.passwordConfirm){
       throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
     }
