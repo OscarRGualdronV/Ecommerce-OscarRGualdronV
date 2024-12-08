@@ -28,10 +28,10 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .  # Verifica que el contexto sea el correcto
-        file: ./Dockerfile  # Asegúrate de que la ruta al Dockerfile sea correcta
-        push: true  # Subir la imagen al repositorio de Docker Hub
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/nest-demo:latest  # Formato correcto para el tag
+        context: .  
+        file: ./Dockerfile  
+        push: true  
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/nest-demo:latest  
 
     
 
