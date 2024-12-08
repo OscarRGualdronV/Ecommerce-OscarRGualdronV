@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail , IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from "class-validator";
+import { IsEmail , IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from "class-validator";
+import { Role } from "../../users/enum/rol.enum";
+
 
 export class SignupDto {
     @IsString()
@@ -10,7 +12,7 @@ export class SignupDto {
         type: String,
         minLength: 3,
         maxLength: 80,
-        example: 'Juan Pérez',
+        example: 'Maria Pérez',
     })
     name: string;
 
@@ -20,7 +22,7 @@ export class SignupDto {
         description: 'Correo electrónico del usuario.',
         type: String,
         format: 'email',
-        example: 'juan.perez@example.com',
+        example: 'maria.perez@example.com',
     })
     email: string;
 
@@ -104,4 +106,5 @@ export class SignupDto {
     constructor(partial: Partial<SignupDto>) {
         Object.assign(this, partial);
     }
+
 }

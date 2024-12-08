@@ -1,8 +1,9 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Role } from 'src/users/enum/rol.enum';
 
 
 @ApiTags('Authentication')
@@ -41,6 +42,7 @@ export class AuthController {
     status: 400,
     description: 'Datos de registro incorrectos o ya existentes.',
   })
+  @ApiBody({ type: SignupDto })
   @Post('signup')
   async signUp(@Body() signUpDto: SignupDto) {
     const createdUser = await this.authService.signUp(signUpDto);

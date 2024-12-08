@@ -1,4 +1,6 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { Express } from 'express';
+import multer from 'multer';
 
 @Injectable()
 export class ImageUploadPipe implements PipeTransform {

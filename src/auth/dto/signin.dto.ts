@@ -8,7 +8,7 @@ export class SigninDto {
     @ApiProperty({
         description: 'Correo electrónico del usuario, registrada en la app',
         type: String,
-        example: 'juan.perez@example.com'
+        example: 'maria.perez@example.com'
     })
     email: string;
 

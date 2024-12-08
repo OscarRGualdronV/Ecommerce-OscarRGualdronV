@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SigninDto } from './dto/signin.dto';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 

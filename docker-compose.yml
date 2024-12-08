@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1228
+      POSTGRES_DB: ecommerce
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - ./db-backups:/docker-entrypoint-initdb.d 
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+    container_name: node-app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 1228
+      DB_NAME: ecommerce
+    ports:
+      - "3000:3000"
+    command: npm run start
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

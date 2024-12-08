@@ -6,6 +6,8 @@ import { JwtGuard } from '../common/guards/jwt/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUploadPipe } from '../pipes/image-upload/image-upload.pipe';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Express } from 'express';
+import multer from 'multer';
 
 
 @Controller('products')
