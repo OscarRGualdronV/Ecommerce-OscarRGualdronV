@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    image: fpaus/ecommerce:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.development
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    image: postgres:13
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    env_file:
+      - .env.development
+
+volumes:
+  postgres-data:
