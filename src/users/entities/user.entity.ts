@@ -32,6 +32,9 @@ export class User {
     @OneToMany(() => Order, (order) => order.user)
     orders: Order[];
 
-    @Column({type: 'enum', enum: Role, default: Role.USER})
+    @Column({
+        type: 'enum', 
+        enum: Role, 
+        default: Role.ADMIN})
     administrador: Role;
 }
